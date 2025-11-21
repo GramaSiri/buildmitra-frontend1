@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken } from '../middleware/auth.js';
+import verifyToken from '../middleware/auth.js';
 import { onboardVendor } from '../controllers/vendorController.js';
 import { exportBOQ } from '../controllers/exportController.js';
 

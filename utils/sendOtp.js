@@ -1,13 +1,22 @@
-import axios from 'axios';
-
 export const sendOtp = async (phone, otp) => {
-  const apiKey = process.env.TWOFACTOR_API_KEY;
-  const url = `https://2factor.in/API/V1/${apiKey}/SMS/${phone}/${otp}/BuildMitra`;
+  const { createClient } = await import('@supabase/supabase-js');
 
-  try {
-    await axios.get(url);
-    console.log(`✅ OTP ${otp} sent to ${phone}`);
-  } catch (err) {
-    console.error(`❌ OTP send failed:`, err.message);
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('❌ Supabase credentials missing from .env');
   }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { error } = await supabase
+    .from('otp_logs')
+    .insert([{ phone, otp, created_at: new Date().toISOString() }]);
+
+  if (error) {
+    throw new Error(`Supabase insert failed: ${error.message}`);
+  }
+
+  console.log(`📦 Supabase OTP stored for ${phone}: ${otp}`);
 };

@@ -1,5 +1,11 @@
 import ExcelJS from 'exceljs';
 
+/**
+ * Generates a BOQ Excel file buffer from data.
+ * @param {Array} boqData Array of BOQ items {item, qty, rate}
+ * @param {String} vendorName Optional vendor name for filename
+ * @returns {Promise<Buffer>} Excel file buffer
+ */
 export const generateBOQExcel = async (boqData, vendorName) => {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('BOQ');

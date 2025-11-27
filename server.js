@@ -1,11 +1,14 @@
-// Load .env before anything else
-import './loadEnv.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
-// Route imports (all match your cleaned filenames)
+// Debugging line (optional, remove once confirmed working)
+console.log('MongoDB URI:', process.env.MONGO_URI);
+
+// Import Routes
 import authRoutes from './routes/auth.js';
 import contractorRoutes from './routes/contractor.js';
 import labourRoutes from './routes/labour.js';
@@ -22,10 +25,14 @@ import quizRoutes from './routes/quiz.js';
 import searchRoutes from './routes/search.js';
 import crmRoutes from './routes/crm.js';
 
-// Express app setup
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ✅ Root route (fixes "Cannot GET /")
+app.get('/', (req, res) => {
+  res.send('🚀 BuildMitra Backend is running!');
+});
 
 // Route mounting
 app.use('/api/auth', authRoutes);
@@ -34,7 +41,7 @@ app.use('/api/labour', labourRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/vendors', vendorRoutes);
-app.use('/api/vendor', vendorRoutes); // (alias, optional)
+app.use('/api/vendor', vendorRoutes); // Alias
 app.use('/api/drawing', drawingRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/chat', chatRoutes);
@@ -45,13 +52,11 @@ app.use('/api/quiz', quizRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/crm', crmRoutes);
 
-// MongoDB connection and server start
 const PORT = process.env.PORT || 5000;
 
+// ✅ Correct mongoose connection (no deprecated options)
 mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
+  serverSelectionTimeoutMS: 5000, // optional, keeps connection attempts short
 })
 .then(() => {
   console.log('✅ MongoDB connected successfully');
